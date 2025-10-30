@@ -7,5 +7,9 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "client/$1" }
+  ],
+  "rewrites": [
+    { "source": "/products", "destination": "/api/products" },
+    { "source": "/products/:id", "destination": "/api/products/:id" }
   ]
 }
