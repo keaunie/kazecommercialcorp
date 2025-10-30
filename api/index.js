@@ -1,28 +1,13 @@
 const express = require("express");
+const morgan = require("morgan");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const path = require("path");
 const serverless = require("serverless-http");
-
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello from Express running on Vercel!" });
-});
-
-module.exports = app;
-module.exports.handler = serverless(app);
-
-
-import express from "express";
-import morgan from "morgan";
-import cors from "cors";
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
-const PORT = process.env.PORT || 5174; //Server Port
 
 app.use(cors());
 app.use(express.json());
@@ -59,32 +44,12 @@ const products = [
   },
 ];
 
+// --- API Routes ---
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 app.get("/api/products", (req, res) => {
   res.json(products);
 });
-
-// Fake checkout endpoint (demo only)
-app.post("/api/checkout", (req, res) => {
-  const { items, email } = req.body || {};
-  if (!Array.isArray(items) || !email) {
-    return res.status(400).json({ error: "Missing items or email" });
-  }
-  // In a real app, integrate a payment provider here.
-  return res.json({
-    success: true,
-    orderId: "ORDER-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
-    message: "Demo checkout complete. No real charge made.",
-  });
-});
-
-// app.listen(PORT, () => {
-//   console.log(`Server listening on http://localhost:${PORT}`);
-// });
-
-app.listen(process.env.PORT || 3000)
-
 
 app.get("/api/products/:id", (req, res) => {
   const product = products.find((p) => p.id === req.params.id);
@@ -94,7 +59,19 @@ app.get("/api/products/:id", (req, res) => {
   res.json(product);
 });
 
-// In production, serve built client
+app.post("/api/checkout", (req, res) => {
+  const { items, email } = req.body || {};
+  if (!Array.isArray(items) || !email) {
+    return res.status(400).json({ error: "Missing items or email" });
+  }
+  return res.json({
+    success: true,
+    orderId: "ORDER-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
+    message: "Demo checkout complete. No real charge made.",
+  });
+});
+
+// --- Serve client build in production ---
 const clientDist = path.join(__dirname, "..", "client", "dist");
 app.use(express.static(clientDist));
 app.get("*", (req, res) => {
@@ -104,3 +81,7 @@ app.get("*", (req, res) => {
     res.status(404).send("Not Found");
   }
 });
+
+// --- Export for Vercel ---
+module.exports = app;
+module.exports.handler = serverless(app);
