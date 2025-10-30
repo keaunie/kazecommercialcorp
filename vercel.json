@@ -11,3 +11,4 @@
     { "src": "/products/:id", "destination": "/api/products/:id" }
   ]
 }
+
