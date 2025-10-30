@@ -7,8 +7,6 @@ app.get("/api", (req, res) => {
   res.json({ message: "Hello from Express running on Vercel!" });
 });
 
-module.exports = app;
-module.exports.handler = serverless(app);
 
 
 // --- In-memory "database" ---
@@ -55,3 +53,7 @@ app.get("/api/products/:id", (req, res) => {
   }
   res.json(product);
 });
+
+
+module.exports = app;
+module.exports.handler = serverless(app);
