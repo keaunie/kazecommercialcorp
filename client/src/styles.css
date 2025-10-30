@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Global helpers */
+.container {
+  @apply max-w-6xl mx-auto px-4;
+}
+
+html, body { margin: 0; padding: 0; }
