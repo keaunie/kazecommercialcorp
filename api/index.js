@@ -71,16 +71,18 @@ app.post("/api/checkout", (req, res) => {
   });
 });
 
-// --- Serve client build in production ---
-const clientDist = path.join(__dirname, "..", "client", "dist");
-app.use(express.static(clientDist));
-app.get("*", (req, res) => {
-  try {
-    res.sendFile(path.join(clientDist, "index.html"));
-  } catch (e) {
-    res.status(404).send("Not Found");
-  }
-});
+// --- Serve client build only when running locally ---
+if (!process.env.VERCEL) {
+  const clientDist = path.join(__dirname, "..", "client", "dist");
+  app.use(express.static(clientDist));
+  app.get("*", (req, res) => {
+    try {
+      res.sendFile(path.join(clientDist, "index.html"));
+    } catch (e) {
+      res.status(404).send("Not Found");
+    }
+  });
+}
 
 // --- Export for Vercel ---
 module.exports = app;
