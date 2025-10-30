@@ -1,17 +1,15 @@
 const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const path = require("path");
 const serverless = require("serverless-http");
-
-dotenv.config();
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-app.use(morgan("dev"));
+app.get("/api", (req, res) => {
+  res.json({ message: "Hello from Express running on Vercel!" });
+});
+
+module.exports = app;
+module.exports.handler = serverless(app);
+
 
 // --- In-memory "database" ---
 const products = [
@@ -44,12 +42,11 @@ const products = [
   },
 ];
 
-// --- API Routes ---
-app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 app.get("/api/products", (req, res) => {
   res.json(products);
 });
+
 
 app.get("/api/products/:id", (req, res) => {
   const product = products.find((p) => p.id === req.params.id);
@@ -58,32 +55,3 @@ app.get("/api/products/:id", (req, res) => {
   }
   res.json(product);
 });
-
-app.post("/api/checkout", (req, res) => {
-  const { items, email } = req.body || {};
-  if (!Array.isArray(items) || !email) {
-    return res.status(400).json({ error: "Missing items or email" });
-  }
-  return res.json({
-    success: true,
-    orderId: "ORDER-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
-    message: "Demo checkout complete. No real charge made.",
-  });
-});
-
-// --- Serve client build only when running locally ---
-if (!process.env.VERCEL) {
-  const clientDist = path.join(__dirname, "..", "client", "dist");
-  app.use(express.static(clientDist));
-  app.get("*", (req, res) => {
-    try {
-      res.sendFile(path.join(clientDist, "index.html"));
-    } catch (e) {
-      res.status(404).send("Not Found");
-    }
-  });
-}
-
-// --- Export for Vercel ---
-module.exports = app;
-module.exports.handler = serverless(app);
