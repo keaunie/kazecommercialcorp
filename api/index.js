@@ -3,11 +3,9 @@ const serverless = require("serverless-http");
 
 const app = express();
 
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.json({ message: "Hello from Express running on Vercel!" });
 });
-
-
 
 // --- In-memory "database" ---
 const products = [
@@ -40,20 +38,18 @@ const products = [
   },
 ];
 
-
-app.get("/api/products", (req, res) => {
+// ✅ Notice: no `/api` prefix in route paths
+app.get("/products", (req, res) => {
   res.json(products);
 });
 
-
-app.get("/api/products/:id", (req, res) => {
+app.get("/products/:id", (req, res) => {
   const product = products.find((p) => p.id === req.params.id);
   if (!product) {
     return res.status(404).json({ error: "Product not found" });
   }
   res.json(product);
 });
-
 
 module.exports = app;
 module.exports.handler = serverless(app);
