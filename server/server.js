@@ -68,9 +68,12 @@ app.post("/api/checkout", (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
-});
+// app.listen(PORT, () => {
+//   console.log(`Server listening on http://localhost:${PORT}`);
+// });
+
+app.listen(process.env.PORT || 3000)
+
 
 app.get("/api/products/:id", (req, res) => {
   const product = products.find((p) => p.id === req.params.id);
