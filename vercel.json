@@ -1,15 +1,13 @@
 {
-  "version": 3,
+  "version": 2,
   "builds": [
     { "src": "client/package.json", "use": "@vercel/static-build" },
     { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "client/$1" }
-  ],
-  "rewrites": [
-    { "source": "/products", "destination": "/api/products" },
-    { "source": "/products/:id", "destination": "/api/products/:id" }
+    { "src": "/(.*)", "dest": "client/$1" },
+    { "src": "/products", "destination": "/api/products" },
+    { "src": "/products/:id", "destination": "/api/products/:id" }
   ]
 }
