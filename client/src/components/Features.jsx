@@ -7,6 +7,8 @@ export default function Features() {
     { title: 'Warranty', desc: '1-year limited warranty and friendly support.' },
     { title: 'Secure Checkout', desc: 'Card-ready integration (demo) over HTTPS.' },
   ]
+
+  
   return (
     <section id="features" className="py-16 bg-neutral-50">
       <div className="container">

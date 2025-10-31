@@ -1,5 +1,10 @@
 // PowerbankHero.jsx
 import React from "react";
+import BlurText from "./BlurText";
+
+const handleAnimationComplete = () => {
+    console.log('Animation completed!');
+};
 
 export default function HeroSection({ srcMp4, srcWebm, poster }) {
     return (
@@ -32,9 +37,16 @@ export default function HeroSection({ srcMp4, srcWebm, poster }) {
 
             {/* Centered text */}
             <div className="relative flex h-full w-full flex-col items-center justify-center px-6 text-center">
-                <h1 className="text-6xl md:text-8xl font-azonix tracking-[0.2em] text-[#F4F4F4] select-none">
+                {/* <h1 className="text-6xl md:text-8xl font-azonix tracking-[0.2em] text-[#F4F4F4] select-none">
                     KAZE
-                </h1>
+                </h1> */}
+
+                <BlurText
+                    text="KAZE"
+                    direction="top"
+                    onAnimationComplete={handleAnimationComplete}
+                    className="text-6xl md:text-8xl font-azonix tracking-[0.2em] text-[#F4F4F4] select-none"
+                />
                 <h2 className="mt-4 text-xl md:text-2xl text-[#F4F4F4] font-light tracking-wide">
                     シンプルな技術、無限の流れ。
                 </h2>

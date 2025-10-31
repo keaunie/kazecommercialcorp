@@ -13,9 +13,19 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const isHome = location.pathname === "/";
+
   // Helper to style active nav links
-  const linkStyle = (path) =>
-    `text-base font-medium transition-colors duration-300 ${
+  const linkStyle = (path) => {
+    if (!isHome) {
+      // On all pages except home: black font
+      return location.pathname === path
+        ? "text-black font-semibold text-base transition-colors duration-300"
+        : "text-black text-base font-medium hover:text-neutral-700 transition-colors duration-300";
+    }
+
+    // Home page behavior (original)
+    return `text-base font-medium transition-colors duration-300 ${
       scrolled
         ? location.pathname === path
           ? "text-neutral-900 font-semibold"
@@ -24,32 +34,37 @@ export default function Navbar() {
         ? "text-white font-semibold"
         : "text-[#F4F4F4] hover:text-white"
     }`;
+  };
 
   return (
     <header
       className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
-        scrolled
-          ? "bg-[#f4f4f4] shadow-md backdrop-blur-none h-20"
-          : "bg-transparent backdrop-blur h-28"
+        isHome
+          ? scrolled
+            ? "bg-[#f4f4f4] shadow-md backdrop-blur-none h-20"
+            : "bg-transparent backdrop-blur h-28"
+          : "bg-white shadow-md h-20"
       }`}
     >
       <div className="container mx-auto flex h-full items-center justify-between px-8 transition-all duration-300">
-        {/* ✅ Logo */}
+        {/* Logo */}
         <Link to="/" className="flex items-center transition-all duration-300">
           <img
             src={
-              scrolled
-                ? "https://res.cloudinary.com/dczzibbkw/image/upload/v1761751962/KAZE-2_ghevj4.png"
-                : "https://res.cloudinary.com/dczzibbkw/image/upload/v1761751603/KAZE-6_j0dkjc.png"
+              isHome
+                ? scrolled
+                  ? "https://res.cloudinary.com/dczzibbkw/image/upload/v1761751962/KAZE-2_ghevj4.png"
+                  : "https://res.cloudinary.com/dczzibbkw/image/upload/v1761751603/KAZE-6_j0dkjc.png"
+                : "https://res.cloudinary.com/dczzibbkw/image/upload/v1761751962/KAZE-2_ghevj4.png"
             }
             alt="KAZE Commercial Corp. logo"
             className={`object-contain transition-all duration-300 ${
-              scrolled ? "h-12" : "h-16"
+              scrolled || !isHome ? "h-12" : "h-16"
             }`}
           />
         </Link>
 
-        {/* ✅ Navigation Links (React Router) */}
+        {/* Navigation Links */}
         <nav className="hidden gap-8 sm:flex transition-all duration-300">
           <Link to="/" className={linkStyle("/")}>
             Home
@@ -62,13 +77,15 @@ export default function Navbar() {
           </Link>
         </nav>
 
-        {/* ✅ Button */}
+        {/* Shop Now Button */}
         <Link
           to="/products"
           className={`rounded-xl px-6 py-3 text-sm font-semibold shadow-soft transition-all duration-300 ${
-            scrolled
-              ? "bg-neutral-800 text-white hover:bg-neutral-900"
-              : "bg-[#f4f4f4] text-neutral-800 hover:bg-neutral-200"
+            isHome
+              ? scrolled
+                ? "bg-neutral-800 text-white hover:bg-neutral-900"
+                : "bg-[#f4f4f4] text-neutral-800 hover:bg-neutral-200"
+              : "bg-black text-white hover:bg-neutral-800"
           }`}
         >
           Shop Now

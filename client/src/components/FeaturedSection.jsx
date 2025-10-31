@@ -79,7 +79,7 @@ export default function FeaturedSection() {
               ["Input:", "100W USB-C"],
               ["Ports:", "1 × USB-C, 1 × USB-A"],
               ["Weight:", "450 g"],
-              ["Material:", "Aluminum Alloy"],
+              ["Material:", "Polycarbonate"],
             ].map(([label, value]) => (
               <motion.div key={label} variants={item}>
                 <span className="font-semibold">{label}</span> {value}
@@ -88,7 +88,7 @@ export default function FeaturedSection() {
           </motion.div>
 
           <motion.a
-            href="#products"
+            href="/products"
             className="mt-10 inline-block rounded-xl bg-brand-600 px-8 py-3 text-white font-semibold hover:bg-brand-700 shadow-soft"
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
