@@ -1,4 +1,3 @@
-// src/components/OrderModal.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -9,12 +8,13 @@ export default function OrderModal({
   isOpen,
   onClose,
   product,
-  defaultChannel = "whatsapp", // "whatsapp" | "form"
-  businessWhatsApp = "639171234567", // change to your number (no +)
-  formEndpoint = "", // optional: e.g. https://formspree.io/f/xxxxxxx
+  quantity = 1,
+  setQuantity,
+  defaultChannel = "whatsapp",
+  businessWhatsApp = "639176380603",
+  formEndpoint = "",
 }) {
   const [channel, setChannel] = useState(defaultChannel);
-  const [qty, setQty] = useState(1);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -23,7 +23,6 @@ export default function OrderModal({
   useEffect(() => {
     if (!isOpen) {
       setChannel(defaultChannel);
-      setQty(1);
       setName("");
       setEmail("");
       setPhone("");
@@ -31,22 +30,27 @@ export default function OrderModal({
     }
   }, [isOpen, defaultChannel]);
 
+  // --- Price parsing & computation ---
+  const parsePrice = (p) => Number((p || "₱0").replace(/[₱,]/g, "")) || 0;
   const unitPrice = useMemo(() => {
-    // use product.priceDirect (cheaper) in modal for both WhatsApp/Form
     if (!product) return 0;
-    const clean = (product.priceDirect || "₱0").replace(/[₱,]/g, "");
-    return Number(clean) || 0;
+    return parsePrice(
+      product.discounted ? product.discountPriceDirect : product.priceDirect
+    );
   }, [product]);
 
-  const total = useMemo(() => unitPrice * qty, [unitPrice, qty]);
+  const total = useMemo(() => unitPrice * quantity, [unitPrice, quantity]);
 
   if (!product) return null;
 
+  // --- WhatsApp message ---
   const waText = encodeURIComponent(
     [
-      `Hi KAZE Team! I'd like to place an order:`,
+      product.status === "pre-order"
+        ? `Hi KAZE Team! I'd like to place a *pre-order*:`
+        : `Hi KAZE Team! I'd like to place an order:`,
       `• Product: ${product.name}`,
-      `• Quantity: ${qty}`,
+      `• Quantity: ${quantity}`,
       `• Unit Price: ${currency(unitPrice)}`,
       `• Total: ${currency(total)}`,
       name && `• Name: ${name}`,
@@ -58,17 +62,17 @@ export default function OrderModal({
       .filter(Boolean)
       .join("\n")
   );
+
   const waHref = `https://wa.me/${businessWhatsApp}?text=${waText}`;
 
+  // --- Form submission handler ---
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Minimal validation
     if (!name || !email || !phone) {
       alert("Please fill in name, email, and phone.");
       return;
     }
 
-    // If a Form endpoint is provided, POST JSON
     if (formEndpoint) {
       try {
         const res = await fetch(formEndpoint, {
@@ -76,7 +80,7 @@ export default function OrderModal({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             product: product.name,
-            qty,
+            qty: quantity,
             unitPrice,
             total,
             name,
@@ -84,22 +88,26 @@ export default function OrderModal({
             phone,
             address,
             channel,
+            preOrder: product.status === "pre-order",
           }),
         });
         if (!res.ok) throw new Error("Form submission failed");
-        alert("✅ Order submitted! We’ll contact you shortly.");
+        alert(
+          product.status === "pre-order"
+            ? "✅ Pre-order submitted! We’ll contact you once available."
+            : "✅ Order submitted! We’ll contact you shortly."
+        );
         onClose?.();
       } catch (err) {
         console.error(err);
-        alert("❌ Could not submit the form. Please try WhatsApp or check your endpoint.");
+        alert("❌ Could not submit the form. Please try again or use WhatsApp.");
       }
       return;
     }
 
-    // Fallback: show success + log (client-only)
     console.log("ORDER_FORM_PAYLOAD", {
       product: product.name,
-      qty,
+      qty: quantity,
       unitPrice,
       total,
       name,
@@ -107,8 +115,14 @@ export default function OrderModal({
       phone,
       address,
       channel,
+      preOrder: product.status === "pre-order",
     });
-    alert("✅ Order captured locally. Add a real endpoint to process it server-side.");
+
+    alert(
+      product.status === "pre-order"
+        ? "✅ Pre-order captured locally (add a real endpoint to process)."
+        : "✅ Order captured locally (add a real endpoint to process)."
+    );
     onClose?.();
   };
 
@@ -125,60 +139,74 @@ export default function OrderModal({
           <div
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={onClose}
-            aria-hidden="true"
           />
 
-          {/* Modal Card */}
+          {/* Modal */}
           <motion.div
             className="relative z-[101] w-[92%] max-w-3xl rounded-3xl bg-white shadow-2xl overflow-hidden"
             initial={{ y: 24, scale: 0.98, opacity: 0 }}
             animate={{ y: 0, scale: 1, opacity: 1 }}
             exit={{ y: 16, scale: 0.98, opacity: 0 }}
             transition={{ type: "spring", stiffness: 260, damping: 22 }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="order-modal-title"
           >
-            {/* Top Banner */}
-            <div className="relative h-28 bg-gradient-to-r from-neutral-900 to-neutral-700" />
-            {/* Floating image card */}
-            <div className="relative -mt-16 px-6">
-              <div className="mx-auto grid gap-6 md:grid-cols-[140px,1fr]">
-                <div className="rounded-2xl bg-white shadow-lg p-3">
-                  <img
-                    src={product.img}
-                    alt={product.name}
-                    className="w-full aspect-square object-contain rounded-xl"
-                  />
-                </div>
-                <div className="flex flex-col justify-end">
-                  <h3
-                    id="order-modal-title"
-                    className="text-2xl md:text-3xl font-bold tracking-tight"
-                  >
-                    {product.name}
-                  </h3>
-                  <p className="text-sm text-neutral-600 mt-1 line-clamp-2">
-                    {product.description}
-                  </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+            {/* Header */}
+            <div className="relative h-28 bg-gradient-to-r from-neutral-900 to-neutral-700 text-white flex items-center justify-center">
+              <h2 className="text-xl md:text-2xl font-semibold">
+                {product.status === "pre-order"
+                  ? "Complete Your Pre-Order"
+                  : "Complete Your Order"}
+              </h2>
+            </div>
+
+            {/* Product Info */}
+            <div className="p-6 flex flex-col md:flex-row gap-6">
+              <div className="md:w-40 flex-shrink-0">
+                <img
+                  src={product.img}
+                  alt={product.name}
+                  className="rounded-2xl border border-neutral-200 w-full aspect-square object-contain"
+                />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
+                  {product.name}
+                  {product.status === "pre-order" && (
+                    <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                      Pre-Order
+                    </span>
+                  )}
+                </h3>
+                <p className="text-sm text-neutral-600 mb-4">
+                  {product.description}
+                </p>
+
+                {/* Price Info */}
+                <div className="flex flex-wrap gap-3 text-sm">
+                  {product.discounted ? (
+                    <span className="px-3 py-1 rounded-full bg-red-50 border border-red-200">
+                      Direct Price:{" "}
+                      <strong className="text-red-600">
+                        {product.discountPriceDirect}
+                      </strong>{" "}
+                      <span className="line-through opacity-60">
+                        {product.priceDirect}
+                      </span>
+                    </span>
+                  ) : (
                     <span className="px-3 py-1 rounded-full bg-neutral-100 border border-neutral-200">
                       Direct Price: <strong>{product.priceDirect}</strong>
                     </span>
-                    <span className="px-3 py-1 rounded-full bg-orange-50 border border-orange-200">
-                      Shopee: <strong>{product.priceShopee}</strong>
-                    </span>
-                    <span className="px-3 py-1 rounded-full bg-green-50 border border-green-200">
-                      Cheaper via WhatsApp / Form
-                    </span>
-                  </div>
+                  )}
+                  <span className="px-3 py-1 rounded-full bg-green-50 border border-green-200">
+                    Same Price via WhatsApp / Form
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleFormSubmit} className="px-6 pb-6 pt-4">
-              {/* Channel + Qty */}
+            {/* Order Form */}
+            <form onSubmit={handleFormSubmit} className="px-6 pb-6">
+              {/* Channel + Quantity */}
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="md:col-span-2">
                   <label className="text-sm font-medium">Order Channel</label>
@@ -192,7 +220,7 @@ export default function OrderModal({
                           : "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-50"
                       }`}
                     >
-                      WhatsApp (Cheaper)
+                      WhatsApp
                     </button>
                     <button
                       type="button"
@@ -203,34 +231,35 @@ export default function OrderModal({
                           : "bg-white text-neutral-800 border-neutral-300 hover:bg-neutral-50"
                       }`}
                     >
-                      Direct Form (Cheaper)
+                      Direct Form
                     </button>
                   </div>
                 </div>
 
+                {/* Quantity */}
                 <div>
                   <label className="text-sm font-medium">Quantity</label>
                   <div className="mt-2 flex items-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setQty((q) => Math.max(1, q - 1))}
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                       className="h-10 w-10 rounded-xl border border-neutral-300 hover:bg-neutral-50"
-                      aria-label="Decrease quantity"
                     >
                       −
                     </button>
                     <input
                       type="number"
                       min={1}
-                      value={qty}
-                      onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
+                      value={quantity}
+                      onChange={(e) =>
+                        setQuantity(Math.max(1, Number(e.target.value) || 1))
+                      }
                       className="w-16 text-center rounded-xl border border-neutral-300 h-10"
                     />
                     <button
                       type="button"
-                      onClick={() => setQty((q) => q + 1)}
+                      onClick={() => setQuantity((q) => q + 1)}
                       className="h-10 w-10 rounded-xl border border-neutral-300 hover:bg-neutral-50"
-                      aria-label="Increase quantity"
                     >
                       +
                     </button>
@@ -246,8 +275,8 @@ export default function OrderModal({
                     className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Juan Dela Cruz"
                     required
+                    placeholder="Juan Dela Cruz"
                   />
                 </div>
                 <div>
@@ -257,8 +286,8 @@ export default function OrderModal({
                     className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
                     required
+                    placeholder="you@example.com"
                   />
                 </div>
                 <div>
@@ -267,8 +296,8 @@ export default function OrderModal({
                     className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2 text-sm"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+63 9xx xxx xxxx"
                     required
+                    placeholder="+63 9xx xxx xxxx"
                   />
                 </div>
                 <div>
@@ -286,13 +315,15 @@ export default function OrderModal({
               <div className="mt-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="text-sm">
                   <div>
-                    Unit Price: <strong>{currency(unitPrice)}</strong>
+                    Unit Price:{" "}
+                    <strong className="text-red-600">{currency(unitPrice)}</strong>
                   </div>
                   <div>
-                    Qty: <strong>{qty}</strong>
+                    Qty: <strong>{quantity}</strong>
                   </div>
                   <div className="text-lg mt-1">
-                    Total: <strong>{currency(total)}</strong>
+                    Total:{" "}
+                    <strong className="text-green-700">{currency(total)}</strong>
                   </div>
                 </div>
 
@@ -304,14 +335,18 @@ export default function OrderModal({
                       rel="noopener noreferrer"
                       className="rounded-xl bg-green-600 px-5 py-3 text-white font-semibold text-sm hover:bg-green-700 text-center"
                     >
-                      Place Order via WhatsApp
+                      {product.status === "pre-order"
+                        ? "Pre-Order via WhatsApp"
+                        : "Place Order via WhatsApp"}
                     </a>
                   ) : (
                     <button
                       type="submit"
                       className="rounded-xl bg-black px-5 py-3 text-white font-semibold text-sm hover:bg-neutral-800"
                     >
-                      Submit Direct Order
+                      {product.status === "pre-order"
+                        ? "Submit Pre-Order"
+                        : "Submit Direct Order"}
                     </button>
                   )}
                   <button

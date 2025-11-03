@@ -1,7 +1,8 @@
 // src/pages/ProductsPage.jsx
-import React, { useMemo } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import products from "../data/products.json";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -20,48 +21,6 @@ const item = {
 
 export default function ProductsPage() {
   const navigate = useNavigate();
-
-  const products = useMemo(
-    () => [
-      {
-        id: 1,
-        slug: "kaze-a26",
-        name: "KAZE A26 Powerbank",
-        img: "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758865/front-and-back-lg_vgoayc.webp",
-        description:
-          "Engineered for performance and minimalism — with 26,800 mAh capacity, 100W USB-C PD, and lightweight polycarbonate body.",
-        status: "available",
-      },
-      {
-        id: 2,
-        slug: "kaze-sonic",
-        name: "KAZE Sonic Wireless Earbuds",
-        img: "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759900/kaze-sonic.webp",
-        description:
-          "Crystal-clear sound and active noise cancellation in a sleek, ergonomic design. Bluetooth 5.3 and 32-hour battery life.",
-        status: "sold-out",
-      },
-      {
-        id: 3,
-        slug: "kaze-arc",
-        name: "KAZE Arc USB-C Cable (100W)",
-        img: "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759901/kaze-arc-cable.webp",
-        description:
-          "Durable braided nylon cable supporting 100W PD and 480Mbps data transfer — perfect for laptops, tablets, and phones.",
-        status: "pre-order",
-      },
-      {
-        id: 4,
-        slug: "kaze-volt",
-        name: "KAZE Volt Adapter 65W GaN",
-        img: "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759902/kaze-volt.webp",
-        description:
-          "Compact GaN fast charger with dual USB-C + USB-A output. 65W power delivery for laptops, tablets, and smartphones.",
-        status: "available",
-      },
-    ],
-    []
-  );
 
   return (
     <section className="py-24 pt-32 bg-[#f9f9f9] min-h-screen">
@@ -98,16 +57,42 @@ export default function ProductsPage() {
                 transition={{ type: "spring", stiffness: 220, damping: 18 }}
               />
               <h3 className="text-xl font-semibold mb-2">{p.name}</h3>
-              <p className="text-neutral-600 text-sm line-clamp-3">{p.description}</p>
+              <p className="text-neutral-600 text-sm line-clamp-3 mb-3">
+                {p.description}
+              </p>
 
-              {p.status === "sold-out" && (
-                <span className="mt-3 inline-block text-gray-500 text-xs font-medium">
-                  Sold Out
+              {/* ✅ Price Display */}
+              <div className="flex items-center gap-2 mb-2">
+                {p.discounted ? (
+                  <>
+                    <span className="text-lg font-semibold text-emerald-700">
+                      {p.discountPriceDirect || p.discountPriceShopee}
+                    </span>
+                    <span className="text-sm text-neutral-500 line-through">
+                      {p.priceDirect || p.priceShopee}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-lg font-semibold text-neutral-800">
+                    {p.priceDirect || p.priceShopee}
+                  </span>
+                )}
+              </div>
+
+              {/* ✅ Status Label */}
+              {p.status === "available" && (
+                <span className="inline-block text-emerald-600 text-xs font-medium">
+                  Available
                 </span>
               )}
               {p.status === "pre-order" && (
-                <span className="mt-3 inline-block text-blue-600 text-xs font-medium">
+                <span className="inline-block text-blue-600 text-xs font-medium">
                   Pre-Order Available
+                </span>
+              )}
+              {p.status === "sold-out" && (
+                <span className="inline-block text-gray-500 text-xs font-medium">
+                  Sold Out
                 </span>
               )}
             </motion.div>

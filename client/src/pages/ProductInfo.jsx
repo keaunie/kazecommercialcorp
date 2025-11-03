@@ -1,8 +1,12 @@
-// src/pages/ProductInfo.jsx
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import OrderModal from "../components/OrderModal";
+import products from "../data/products.json";
+
+
+// 🔧 Update this once to change your WhatsApp number everywhere
+const BUSINESS_WHATSAPP = "639260163205";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -12,123 +16,65 @@ const fadeIn = {
 export default function ProductInfo() {
   const { slug } = useParams();
 
-  const products = useMemo(
-    () => [
-      {
-        id: 1,
-        slug: "kaze-a26",
-        name: "KAZE A26 Powerbank",
-        img: "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758865/front-and-back-lg_vgoayc.webp",
-        description:
-          "Engineered for performance and minimalism — with 26,800 mAh capacity, 100W USB-C PD, and lightweight polycarbonate body.",
-        specs: [
-          ["Capacity:", "26,800 mAh"],
-          ["Output:", "100W USB-C PD"],
-          ["Input:", "100W USB-C"],
-          ["Ports:", "1 × USB-C, 1 × USB-A"],
-          ["Weight:", "450 g"],
-          ["Material:", "Polycarbonate"],
-        ],
-        priceShopee: "₱2,999",
-        priceDirect: "₱2,499",
-        shopee: "https://shopee.ph/product/kaze-a26-powerbank",
-        whatsapp:
-          "https://wa.me/639171234567?text=Hi%20KAZE%20Team!%20I'm%20interested%20in%20ordering%20the%20KAZE%20A26%20Powerbank%20(₱2,499%20via%20WhatsApp).",
-        status: "available",
-      },
-      {
-        id: 2,
-        slug: "kaze-sonic",
-        name: "KAZE Sonic Wireless Earbuds",
-        img: "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759900/kaze-sonic.webp",
-        description:
-          "Crystal-clear sound and active noise cancellation in a sleek, ergonomic design. Bluetooth 5.3 and 32-hour battery life.",
-        specs: [
-          ["Battery Life:", "32 hours"],
-          ["Connectivity:", "Bluetooth 5.3"],
-          ["ANC:", "Active Noise Cancellation"],
-          ["Weight:", "55 g"],
-          ["Charging Case:", "Yes, 3 full charges"],
-        ],
-        priceShopee: "₱1,799",
-        priceDirect: "₱1,499",
-        shopee: "https://shopee.ph/product/kaze-sonic",
-        whatsapp:
-          "https://wa.me/639171234567?text=Hi%20KAZE%20Team!%20I'd%20like%20to%20order%20the%20KAZE%20Sonic%20Earbuds%20(₱1,499%20via%20WhatsApp).",
-        status: "sold-out",
-      },
-      {
-        id: 3,
-        slug: "kaze-arc",
-        name: "KAZE Arc USB-C Cable (100W)",
-        img: "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759901/kaze-arc-cable.webp",
-        description:
-          "Durable braided nylon cable supporting 100W PD and 480Mbps data transfer — perfect for laptops, tablets, and phones.",
-        specs: [
-          ["Length:", "1 m"],
-          ["Power:", "100W PD"],
-          ["Data Transfer:", "480 Mbps"],
-          ["Material:", "Braided Nylon"],
-          ["Compatibility:", "USB-C devices"],
-        ],
-        priceShopee: "₱499",
-        priceDirect: "₱399",
-        shopee: "https://shopee.ph/product/kaze-arc-cable",
-        whatsapp:
-          "https://wa.me/639171234567?text=Hi%20KAZE%20Team!%20I'd%20like%20to%20order%20the%20KAZE%20Arc%20Cable%20(₱399%20via%20WhatsApp).",
-        status: "pre-order",
-      },
-      {
-        id: 4,
-        slug: "kaze-volt",
-        name: "KAZE Volt Adapter 65W GaN",
-        img: "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759902/kaze-volt.webp",
-        description:
-          "Compact GaN fast charger with dual USB-C + USB-A output. 65W power delivery for laptops, tablets, and smartphones.",
-        specs: [
-          ["Output:", "65W Max"],
-          ["Ports:", "2 × USB-C, 1 × USB-A"],
-          ["Input:", "100-240V AC"],
-          ["Weight:", "120 g"],
-          ["Material:", "Aluminum + Polycarbonate"],
-        ],
-        priceShopee: "₱1,399",
-        priceDirect: "₱1,199",
-        shopee: "https://shopee.ph/product/kaze-volt",
-        whatsapp:
-          "https://wa.me/639171234567?text=Hi%20KAZE%20Team!%20I'd%20like%20to%20order%20the%20KAZE%20Volt%2065W%20Adapter%20(₱1,199%20via%20WhatsApp).",
-        status: "available",
-      },
-      // add the rest of your products here...
-    ],
-    []
-  );
-
   const product = products.find((p) => p.slug === slug);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [preorderProof, setPreorderProof] = useState(null);
 
-  const [modalOpen, setModalOpen] = React.useState(false);
+  useEffect(() => {
+    setActiveIndex(0);
+    setQuantity(1);
+  }, [product]);
 
   if (!product) return <p className="text-center py-24">Product not found</p>;
+
+  const finalDirectPrice = product.discounted
+    ? product.discountPriceDirect
+    : product.priceDirect;
+
+  const finalShopeePrice = product.discounted
+    ? product.discountPriceShopee
+    : product.priceShopee;
+
+  const whatsappLink = `https://wa.me/${BUSINESS_WHATSAPP}?text=${encodeURIComponent(
+    `Hi KAZE Team! I'm interested in ordering the ${product.name}.`
+  )}`;
+
+  // 🧾 Handle Pre-order Submit
+  const handlePreorderSubmit = (e) => {
+    e.preventDefault();
+    alert("✅ Pre-order form submitted with proof of payment!");
+    setPreorderProof(null);
+  };
 
   return (
     <section className="py-24 pt-32 bg-[#f9f9f9]">
       <div className="container mx-auto px-6 flex flex-col lg:flex-row gap-12">
-        {/* Image */}
+        {/* --- IMAGE VIEWER --- */}
         <motion.div
-          className="flex-1 flex justify-center"
+          className="flex-1 flex flex-col items-center"
           initial="hidden"
           whileInView="show"
           variants={fadeIn}
         >
-          <motion.img
-            src={product.img}
-            alt={product.name}
-            className="rounded-3xl shadow-lg max-w-lg w-full object-contain"
-            whileHover={{ scale: 1.03 }}
-          />
+          <div className="relative w-full max-w-lg overflow-hidden rounded-3xl shadow-lg bg-white">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={activeIndex}
+                src={product.gallery?.[activeIndex] || product.img}
+                alt={product.name}
+                className="w-full aspect-square object-contain"
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                transition={{ duration: 0.4 }}
+              />
+            </AnimatePresence>
+          </div>
         </motion.div>
 
-        {/* Info */}
+        {/* --- PRODUCT DETAILS --- */}
         <motion.div
           className="flex-1 text-neutral-900"
           initial="hidden"
@@ -146,31 +92,73 @@ export default function ProductInfo() {
             ))}
           </div>
 
-          <p className="text-neutral-800 text-sm mb-1">
-            <span className="font-semibold">Shopee:</span> {product.priceShopee}
-          </p>
-          <p className="text-emerald-700 text-sm mb-4">
-            <span className="font-semibold">Direct via WhatsApp/Form:</span> {product.priceDirect}
-          </p>
+          {/* --- QUANTITY --- */}
+          <div className="mb-6">
+            <label className="text-sm font-medium">Quantity:</label>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                className="h-10 w-10 rounded-xl border border-neutral-300 hover:bg-neutral-100"
+              >
+                −
+              </button>
+              <input
+                type="number"
+                min={1}
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+                className="w-16 text-center rounded-xl border border-neutral-300 h-10"
+              />
+              <button
+                onClick={() => setQuantity((q) => q + 1)}
+                className="h-10 w-10 rounded-xl border border-neutral-300 hover:bg-neutral-100"
+              >
+                +
+              </button>
+            </div>
+          </div>
 
+          {/* --- PRICE --- */}
+          <div className="text-sm mb-4 space-y-2">
+            <p className="text-emerald-700">
+              <span className="font-semibold">Direct Price:</span>{" "}
+              {product.discounted ? (
+                <>
+                  <span className="line-through opacity-60">{product.priceDirect}</span>{" "}
+                  <span className="text-green-700 font-semibold">
+                    {product.discountPriceDirect}
+                  </span>
+                </>
+              ) : (
+                product.priceDirect
+              )}
+            </p>
+            <p className="text-orange-600">
+              <span className="font-semibold">Shopee Price:</span>{" "}
+              {product.discounted ? (
+                <>
+                  <span className="line-through opacity-60">{product.priceShopee}</span>{" "}
+                  <span className="text-orange-700 font-semibold">
+                    {product.discountPriceShopee}
+                  </span>
+                </>
+              ) : (
+                product.priceShopee
+              )}
+            </p>
+          </div>
+
+          {/* --- BUTTONS --- */}
           <div className="flex flex-wrap gap-3">
             {product.status === "available" && (
               <>
                 <a
-                  href={product.whatsapp}
+                  href={whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 rounded-xl bg-green-600 text-white text-sm px-4 py-2 text-center font-medium hover:bg-green-700"
                 >
                   Order via WhatsApp
-                </a>
-                <a
-                  href={product.shopee}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 rounded-xl bg-orange-500 text-white text-sm px-4 py-2 text-center font-medium hover:bg-orange-600"
-                >
-                  Buy on Shopee
                 </a>
                 <button
                   onClick={() => setModalOpen(true)}
@@ -178,23 +166,38 @@ export default function ProductInfo() {
                 >
                   Order Form
                 </button>
+                <a
+                  href={product.shopee}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 rounded-xl bg-orange-500 text-white text-sm px-4 py-2 text-center font-medium hover:bg-orange-600"
+                >
+                  Order via Shopee
+                </a>
               </>
             )}
-            {product.status === "sold-out" && (
-              <button
-                className="flex-1 rounded-xl bg-gray-400 text-white text-sm px-4 py-2 text-center font-medium cursor-not-allowed"
-                disabled
-              >
-                Sold Out
-              </button>
-            )}
+
+            {/* 🟡 PRE-ORDER OPTION */}
             {product.status === "pre-order" && (
-              <button
-                onClick={() => setModalOpen(true)}
-                className="flex-1 rounded-xl bg-blue-600 text-white text-sm px-4 py-2 text-center font-medium hover:bg-blue-700"
-              >
-                Pre-Order / Request
-              </button>
+              <form onSubmit={handlePreorderSubmit} className="flex flex-col gap-3 w-full">
+                <p className="text-sm text-blue-700">
+                  This item is available for <strong>pre-order</strong>. Please upload proof of
+                  payment below:
+                </p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setPreorderProof(e.target.files[0])}
+                  required
+                  className="border border-neutral-300 rounded-lg p-2 text-sm"
+                />
+                <button
+                  type="submit"
+                  className="rounded-xl bg-blue-600 text-white text-sm px-4 py-2 text-center font-medium hover:bg-blue-700"
+                >
+                  Submit Pre-Order
+                </button>
+              </form>
             )}
           </div>
 
@@ -204,13 +207,14 @@ export default function ProductInfo() {
         </motion.div>
       </div>
 
+      {/* --- ORDER MODAL --- */}
       <OrderModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         product={product}
-        defaultChannel="whatsapp"
-        businessWhatsApp="639171234567"
-        formEndpoint=""
+        quantity={quantity}
+        setQuantity={setQuantity}
+        businessWhatsApp={BUSINESS_WHATSAPP}
       />
     </section>
   );

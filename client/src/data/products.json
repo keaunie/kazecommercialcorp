@@ -1,0 +1,166 @@
+[
+    {
+        "id": 1,
+        "slug": "kaze-a26",
+        "name": "KAZE A26 Powerbank",
+        "img": "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758865/front-and-back-lg_vgoayc.webp",
+        "gallery": [
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758865/front-and-back-lg_vgoayc.webp",
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758866/side-view.webp",
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758867/close-up.webp"
+        ],
+        "description": "Engineered for performance and minimalism — with 26,800 mAh capacity, 100W USB-C PD, and lightweight polycarbonate body.",
+        "specs": [
+            [
+                "Capacity:",
+                "26,800 mAh"
+            ],
+            [
+                "Output:",
+                "100W USB-C PD"
+            ],
+            [
+                "Input:",
+                "100W USB-C"
+            ],
+            [
+                "Ports:",
+                "1 × USB-C, 1 × USB-A"
+            ],
+            [
+                "Weight:",
+                "450 g"
+            ],
+            [
+                "Material:",
+                "Polycarbonate"
+            ]
+        ],
+        "priceShopee": "₱2,999",
+        "priceDirect": "₱2,499",
+        "discounted": true,
+        "discountPriceShopee": "₱4,500",
+        "discountPriceDirect": "₱2,899",
+        "shopee": "https://ph.shp.ee/WLYot6Y",
+        "status": "available"
+    },
+    {
+        "id": 2,
+        "slug": "kaze-sonic",
+        "name": "KAZE Sonic Wireless Earbuds",
+        "img": "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759900/kaze-sonic.webp",
+        "gallery": [
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759900/kaze-sonic.webp",
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759901/kaze-sonic-case.webp",
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759902/kaze-sonic-wearing.webp"
+        ],
+        "description": "Crystal-clear sound and active noise cancellation in a sleek, ergonomic design. Bluetooth 5.3 and 32-hour battery life.",
+        "specs": [
+            [
+                "Battery Life:",
+                "32 hours"
+            ],
+            [
+                "Connectivity:",
+                "Bluetooth 5.3"
+            ],
+            [
+                "ANC:",
+                "Active Noise Cancellation"
+            ],
+            [
+                "Weight:",
+                "55 g"
+            ],
+            [
+                "Charging Case:",
+                "Yes, 3 full charges"
+            ]
+        ],
+        "priceShopee": "₱1,799",
+        "priceDirect": "₱1,499",
+        "discounted": false,
+        "shopee": "https://shopee.ph/product/kaze-sonic",
+        "status": "sold-out"
+    },
+    {
+        "id": 3,
+        "slug": "kaze-arc",
+        "name": "KAZE Arc USB-C Cable (100W)",
+        "img": "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759901/kaze-arc-cable.webp",
+        "gallery": [
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759901/kaze-arc-cable.webp",
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759902/kaze-arc-detail.webp",
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759903/kaze-arc-packaging.webp"
+        ],
+        "description": "Durable braided nylon cable supporting 100W PD and 480Mbps data transfer — perfect for laptops, tablets, and phones.",
+        "specs": [
+            [
+                "Length:",
+                "1 m"
+            ],
+            [
+                "Power:",
+                "100W PD"
+            ],
+            [
+                "Data Transfer:",
+                "480 Mbps"
+            ],
+            [
+                "Material:",
+                "Braided Nylon"
+            ],
+            [
+                "Compatibility:",
+                "USB-C devices"
+            ]
+        ],
+        "priceShopee": "₱499",
+        "priceDirect": "₱399",
+        "discounted": true,
+        "discountPriceShopee": "₱449",
+        "discountPriceDirect": "₱349",
+        "shopee": "https://shopee.ph/product/kaze-arc-cable",
+        "status": "pre-order"
+    },
+    {
+        "id": 4,
+        "slug": "kaze-volt",
+        "name": "KAZE Volt Adapter 65W GaN",
+        "img": "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759902/kaze-volt.webp",
+        "gallery": [
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759902/kaze-volt.webp",
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759903/kaze-volt-side.webp",
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761759904/kaze-volt-ports.webp"
+        ],
+        "description": "Compact GaN fast charger with dual USB-C + USB-A output. 65W power delivery for laptops, tablets, and smartphones.",
+        "specs": [
+            [
+                "Output:",
+                "65W Max"
+            ],
+            [
+                "Ports:",
+                "2 × USB-C, 1 × USB-A"
+            ],
+            [
+                "Input:",
+                "100-240V AC"
+            ],
+            [
+                "Weight:",
+                "120 g"
+            ],
+            [
+                "Material:",
+                "Aluminum + Polycarbonate"
+            ]
+        ],
+        "priceShopee": "₱1,399",
+        "priceDirect": "₱1,199",
+        "discounted": false,
+        "shopee": "https://shopee.ph/product/kaze-volt",
+        "status": "sold-out"
+    }
+]
