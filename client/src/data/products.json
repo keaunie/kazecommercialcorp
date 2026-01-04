@@ -6,8 +6,7 @@
         "img": "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758865/front-and-back-lg_vgoayc.webp",
         "gallery": [
             "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758865/front-and-back-lg_vgoayc.webp",
-            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758866/side-view.webp",
-            "https://res.cloudinary.com/dczzibbkw/image/upload/v1761758867/close-up.webp"
+            "https://res.cloudinary.com/dczzibbkw/image/upload/v1767502365/WhatsApp_Image_2026-01-04_at_12.51.34_uwbqep.jpg"
         ],
         "description": "Engineered for performance and minimalism — with 26,800 mAh capacity, 100W USB-C PD, and lightweight polycarbonate body.",
         "specs": [
@@ -36,11 +35,11 @@
                 "Polycarbonate"
             ]
         ],
-        "priceShopee": "₱2,999",
-        "priceDirect": "₱2,499",
+        "priceShopee": "₱4,999",
+        "priceDirect": "₱2,899",
         "discounted": true,
-        "discountPriceShopee": "₱4,500",
-        "discountPriceDirect": "₱2,899",
+        "discountPriceShopee": "₱2,999",
+        "discountPriceDirect": "₱2,499",
         "shopee": "https://ph.shp.ee/WLYot6Y",
         "status": "available"
     },

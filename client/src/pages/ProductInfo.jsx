@@ -13,6 +13,24 @@ const fadeIn = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
+const statusMeta = {
+  available: {
+    label: "In stock",
+    detail: "Ready to ship in 1-2 business days.",
+    style: "bg-emerald-100 text-emerald-700 border border-emerald-200",
+  },
+  "pre-order": {
+    label: "Pre-order",
+    detail: "Reserve yours now — we’ll ship as soon as the next batch lands.",
+    style: "bg-blue-100 text-blue-700 border border-blue-200",
+  },
+  "sold-out": {
+    label: "Sold out",
+    detail: "Currently unavailable. Message us to join the waitlist.",
+    style: "bg-neutral-100 text-neutral-700 border border-neutral-200",
+  },
+};
+
 export default function ProductInfo() {
   const { slug } = useParams();
 
@@ -72,6 +90,25 @@ export default function ProductInfo() {
               />
             </AnimatePresence>
           </div>
+
+          {product.gallery?.length > 1 && (
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
+              {product.gallery.map((src, idx) => (
+                <button
+                  key={src}
+                  onClick={() => setActiveIndex(idx)}
+                  className={`relative h-20 w-20 overflow-hidden rounded-xl border transition ${
+                    activeIndex === idx
+                      ? "border-emerald-500 ring-2 ring-emerald-200"
+                      : "border-neutral-200 hover:border-neutral-300"
+                  }`}
+                  aria-label={`View image ${idx + 1}`}
+                >
+                  <img src={src} alt={`${product.name} view ${idx + 1}`} className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* --- PRODUCT DETAILS --- */}
@@ -81,7 +118,17 @@ export default function ProductInfo() {
           whileInView="show"
           variants={fadeIn}
         >
-          <h1 className="text-4xl md:text-5xl font-azonix tracking-wide mb-6">{product.name}</h1>
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <h1 className="text-4xl md:text-5xl font-azonix tracking-wide">{product.name}</h1>
+            <span
+              className={`rounded-full px-4 py-1 text-xs font-semibold ${statusMeta[product.status]?.style || "bg-neutral-100 text-neutral-700 border border-neutral-200"}`}
+            >
+              {statusMeta[product.status]?.label || "Status unavailable"}
+            </span>
+          </div>
+          <p className="text-sm text-neutral-600 mb-2">
+            {statusMeta[product.status]?.detail || "Check availability with our team."}
+          </p>
           <p className="text-lg text-neutral-700 mb-8">{product.description}</p>
 
           <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm text-neutral-800 mb-6">
