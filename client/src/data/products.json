@@ -36,10 +36,10 @@
             ]
         ],
         "priceShopee": "₱4,999",
-        "priceDirect": "₱2,899",
+        "priceDirect": "₱3,499",
         "discounted": true,
         "discountPriceShopee": "₱2,999",
-        "discountPriceDirect": "₱2,499",
+        "discountPriceDirect": "₱2,799",
         "shopee": "https://ph.shp.ee/WLYot6Y",
         "status": "available"
     },
